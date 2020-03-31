@@ -1,0 +1,38 @@
+version: '3.2'
+services:
+    account-manager-integ:
+        build:
+            context: ./tomcat
+        container_name: account-manager-integ
+        ports:
+            - "8081:8080"
+        networks: 
+            - network
+        depends_on: 
+            - "account-manager-db"
+        volumes: 
+          - type: bind
+            source: /opt/account-manager/data
+            target: /usr/local/tomcat/webapps
+        restart: unless-stopped
+
+    account-manager-db:
+        build: 
+            context: ./database
+        container_name: account-manager-db
+        ports: 
+            - "3308:3306"
+        networks: 
+            - network
+        volumes:
+            - type: volume
+              source: dbdata
+              target: /opt/account-manager/data
+        restart: unless-stopped
+
+networks: 
+  network:
+    driver: bridge
+
+volumes:
+  dbdata:
